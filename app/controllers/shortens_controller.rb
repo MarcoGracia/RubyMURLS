@@ -16,9 +16,9 @@ class ShortensController < ApplicationController
       redirectcount = @shorten.redirectcount
       
       if redirectcount == 0
-        format.json { render json: @shorten, :only => [:startdate, :redirectcount]}
+        format.json { render json: @shorten, :only => [:startdate, :redirectcount] }
       else
-        format.json { render json: @shorten, :only => [:startdate, :redirectcount, :lastseendate]}
+        format.json { render json: @shorten, :only => [:startdate, :redirectcount, :lastseendate] }
       end
     end
   end
@@ -27,64 +27,55 @@ class ShortensController < ApplicationController
   def show
     
     time = Time.now.to_s
-    time = DateTime.parse(time).strftime("%d/%m/%Y %H:%M")
-    @shorten.update_attribute(:lastseendate, time)
+    time = DateTime.parse( time ).strftime( "%d/%m/%Y %H:%M" )
+    @shorten.update_attribute( :lastseendate, time )
     @shorten.update_attribute( :redirectcount, @shorten.redirectcount + 1 )
     render text: "Local: " +  @shorten.url, :status => 302
+    
   end
 
   #POST /shorten
   def create
     
     @shorten = Shorten.new(shorten_params)
-
-    respond_to do |format|
-      if @shorten.save
-        #TODO redirect to success and compose json
-        format.html { redirect_to @shorten, notice: 'Shorten was successfully created.' }
-        format.json { render :show, status: :created, location: @shorten }
-      else
-        format.html { render :new }
-        format.json { render json: @shorten.errors, status: :unprocessable_entity }
-      end
+    
+    url = @shorten.url
+    shortcode = @shorten.shortcode
+    
+    if url.nil? 
+        render text: "The url is not present." , :status => 400
+      elsif !( shortcode.match( "^[0-9a-zA-Z_]{4,}$" ) )
+        render text: "The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$. " , :status => 422
+      elsif Shorten.find_by shortcode: shortcode
+        render text: "The the desired shortcode is already in use. Shortcodes are case-sensitive. " , :status => 409
+      elsif @shorten.save
+        respond_to do |format|
+          format.json { render json: @shorten, :only => [:shortcode]}
+        end
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+
     def set_shorten
       @shorten = Shorten.find_by shortcode: params[:id]
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def shorten_params
       
       url = params[:shorten][:url]
-      
-      if url.nil? 
-        # TODO Throw 400
-      end
-      
       shortcode = params[:shorten][:shortcode]
-      
-      if !( shortcode.match("^[0-9a-zA-Z_]{4,}$") )
-        #TODO throw 422
-      end
-      
-      if Shorten.find_by shortcode: shortcode
-        # TODO Throw 409
-      end
-      
+
       if shortcode.nil? 
-        shortcode = rand(36**6).to_s(36)
+        shortcode = rand( 36**6 ).to_s( 36 )
       end
       
       time = Time.now.to_s
-      time = DateTime.parse(time).strftime("%d/%m/%Y %H:%M")
+      time = DateTime.parse( time ).strftime( "%d/%m/%Y %H:%M" )
       
-      params = ActionController::Parameters.new( url:url, shortcode:shortcode, startdate: time )
+      params = ActionController::Parameters.new( url:url, shortcode:shortcode, startdate: time, redirectcount: 0 )
       
-      params.permit(:url, :shortcode, :startdate )
+      params.permit(:url, :shortcode, :startdate, :redirectcount )
       
     end
 
