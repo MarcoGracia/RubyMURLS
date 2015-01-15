@@ -26,8 +26,7 @@ class ShortensController < ApplicationController
 
     respond_to do |format|
       if @shorten.save
-        format.html { redirect_to @shorten, notice: 'Shorten was successfully created.' }
-        format.json { render :show, status: :created, location: @shorten }
+        #TODO redirect to success and compose json
       else
         format.html { render :new }
         format.json { render json: @shorten.errors, status: :unprocessable_entity }
