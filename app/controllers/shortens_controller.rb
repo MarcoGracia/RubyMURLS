@@ -21,6 +21,7 @@ class ShortensController < ApplicationController
   # POST /shortens
   # POST /shortens.json
   def create
+    
     @shorten = Shorten.new(shorten_params)
 
     respond_to do |format|
@@ -42,6 +43,33 @@ class ShortensController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def shorten_params
-      params.require(:shorten).permit(:url, :shortcode )
+      
+      url = params[:shorten][:url]
+      
+      if url.nil? 
+        # TODO Throw 400
+      end
+      
+      shortcode = params[:shorten][:shortcode]
+      
+      if !( shortcode.match("^[0-9a-zA-Z_]{4,}$") )
+        #TODO throw 422
+      end
+      
+      if Shorten.find_by shortcode: shortcode
+        # TODO Throw 409
+      end
+      
+      if shortcode.nil? 
+        shortcode = rand(36**6).to_s(36)
+      end
+      
+      time = Time.now.to_s
+      time = DateTime.parse(time).strftime("%d/%m/%Y %H:%M")
+      
+      params = ActionController::Parameters.new( url:url, shortcode:shortcode, startdate: time )
+      
+      params.permit(:url, :shortcode, :startdate )
+      
     end
 end
