@@ -13,7 +13,7 @@ class ShortensController < ApplicationController
   def stats
     respond_to do |format|
       
-      redirectcount = 0
+      redirectcount = @shorten.redirectcount
       
       if redirectcount == 0
         format.json { render json: @shorten, :only => [:startdate, :redirectcount]}
@@ -25,7 +25,7 @@ class ShortensController < ApplicationController
 
   #GET /:shortcode
   def show
-    render text: "Local: " +  @shorten.url
+    render text: "Local: " +  @shorten.url, :status => 302
   end
 
   #POST /shorten
