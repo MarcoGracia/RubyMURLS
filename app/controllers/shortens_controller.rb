@@ -1,25 +1,34 @@
 class ShortensController < ApplicationController
-  before_action :set_shorten, only: [:show, :edit, :update, :destroy]
+  before_action :set_shorten
+  before_action :set_default_response_format
   protect_from_forgery with: :null_session
-
+  
   # GET /shortens
   # GET /shortens.json
   def index
     @shortens = Shorten.all
   end
 
-  # GET /shortens/1
-  # GET /shortens/1.json
+  #GET /:shortcode/stats
+  def stats
+    respond_to do |format|
+      
+      redirectcount = 0
+      
+      if redirectcount == 0
+        format.json { render json: @shorten, :only => [:startdate, :redirectcount]}
+      else
+        format.json { render json: @shorten, :only => [:startdate, :redirectcount, :lastseendate]}
+      end
+    end
+  end
+
+  #GET /:shortcode
   def show
+    render text: "Local: " +  @shorten.url
   end
 
-  # GET /shortens/new
-  def new
-    @shorten = Shorten.new
-  end
-
-  # POST /shortens
-  # POST /shortens.json
+  #POST /shorten
   def create
     
     @shorten = Shorten.new(shorten_params)
@@ -27,6 +36,8 @@ class ShortensController < ApplicationController
     respond_to do |format|
       if @shorten.save
         #TODO redirect to success and compose json
+        format.html { redirect_to @shorten, notice: 'Shorten was successfully created.' }
+        format.json { render :show, status: :created, location: @shorten }
       else
         format.html { render :new }
         format.json { render json: @shorten.errors, status: :unprocessable_entity }
@@ -37,7 +48,7 @@ class ShortensController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_shorten
-      @shorten = Shorten.find(params[:id])
+      @shorten = Shorten.find_by shortcode: params[:id]
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
@@ -70,5 +81,10 @@ class ShortensController < ApplicationController
       
       params.permit(:url, :shortcode, :startdate )
       
+    end
+
+    protected
+    def set_default_response_format
+      request.format = :json
     end
 end
