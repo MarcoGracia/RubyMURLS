@@ -25,6 +25,11 @@ class ShortensController < ApplicationController
 
   #GET /:shortcode
   def show
+    
+    time = Time.now.to_s
+    time = DateTime.parse(time).strftime("%d/%m/%Y %H:%M")
+    @shorten.update_attribute(:lastseendate, time)
+    @shorten.update_attribute( :redirectcount, @shorten.redirectcount + 1 )
     render text: "Local: " +  @shorten.url, :status => 302
   end
 
