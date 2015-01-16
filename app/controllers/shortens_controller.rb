@@ -11,26 +11,40 @@ class ShortensController < ApplicationController
 
   #GET /:shortcode/stats
   def stats
-    respond_to do |format|
-      
-      redirectcount = @shorten.redirectcount
-      
-      if redirectcount == 0
-        format.json { render json: @shorten, :only => [:startdate, :redirectcount] }
-      else
-        format.json { render json: @shorten, :only => [:startdate, :redirectcount, :lastseendate] }
+    
+      begin
+        redirectcount = @shorten.redirectcount
+        
+        respond_to do |format|
+          
+          if redirectcount == 0
+            format.json { render json: @shorten, :only => [:startdate, :redirectcount] }
+          else
+            format.json { render json: @shorten, :only => [:startdate, :redirectcount, :lastseendate] }
+          end
+          
+        end
+      rescue
+        render text: "The shortcode cannot be found in the system", :status => 404
       end
-    end
+    
   end
 
   #GET /:shortcode
   def show
-    
+
     time = Time.now.to_s
     time = DateTime.parse( time ).strftime( "%d/%m/%Y %H:%M" )
-    @shorten.update_attribute( :lastseendate, time )
-    @shorten.update_attribute( :redirectcount, @shorten.redirectcount + 1 )
-    render text: "Local: " +  @shorten.url, :status => 302
+
+    begin
+      @shorten.update_attribute( :lastseendate, time )
+      @shorten.update_attribute( :redirectcount, @shorten.redirectcount + 1 )
+      render text: "Local: " +  @shorten.url, :status => 302
+    rescue
+      render text: "The shortcode cannot be found in the system", :status => 404
+    end
+    
+    
     
   end
 
