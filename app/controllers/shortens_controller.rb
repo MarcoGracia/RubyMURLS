@@ -1,6 +1,7 @@
 class ShortensController < ApplicationController
   before_action :set_shorten
   before_action :set_default_response_format
+  before_action :set_header_type
   protect_from_forgery with: :null_session
 
   #GET /:shortcode/stats
@@ -57,7 +58,7 @@ class ShortensController < ApplicationController
     elsif @shorten.save
       #In case the save is successfull render the generated shortcode
       respond_to do |format|
-        format.json { render json: @shorten, :only => [:shortcode]}
+        format.json { render json: @shorten, :only => [:shortcode], status: :created}
       end
     end
   end
@@ -92,5 +93,9 @@ class ShortensController < ApplicationController
     def get_current_date
       time = Time.now.to_s
       time = DateTime.parse( time ).strftime( "%d/%m/%Y %H:%M" )
+    end
+    
+    def set_header_type
+      response.headers["Content-Type"] = '"application/json"'
     end
 end
