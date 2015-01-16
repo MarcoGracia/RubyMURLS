@@ -27,15 +27,15 @@ class ShortensControllerTest < ActionController::TestCase
     assert_response :missing
   end
   
-    test "should get shortcode one" do
+    test "should redirect one" do
     get(:show, {'id' => "sone" })
-    assert_equal "Local: http://stackoverflow.com/questions/21269050/rails-yaml-fixture-specify-null-value", @response.body
+    assert_redirected_to "http://stackoverflow.com/questions/21269050/rails-yaml-fixture-specify-null-value"
     assert_response :redirect
   end
   
-  test "should get shortcode two" do
+  test "should redirect two" do
     get(:show, {'id' => "stwo" })
-    assert_equal "Local: http://stackoverflow.com", @response.body
+    assert_redirected_to "http://stackoverflow.com"
     assert_response :redirect
   end
   
