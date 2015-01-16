@@ -30,7 +30,7 @@ class ShortensController < ApplicationController
     begin
       @shorten.update_attribute( :lastseendate, get_current_date )
       @shorten.update_attribute( :redirectcount, @shorten.redirectcount + 1 )
-      render text: "Local: " +  @shorten.url, :status => 302
+      redirect_to @shorten.url
     rescue
       render text: "The shortcode cannot be found in the system", :status => 404
     end

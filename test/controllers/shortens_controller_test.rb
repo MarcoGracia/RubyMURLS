@@ -39,7 +39,6 @@ class ShortensControllerTest < ActionController::TestCase
     assert_response :redirect
   end
   
-  
   test "should not get shortcode" do
     get(:show, {'id' => "12345" })
     assert_response :missing
