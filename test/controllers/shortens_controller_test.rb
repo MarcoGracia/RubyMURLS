@@ -1,49 +1,48 @@
 require 'test_helper'
 
 class ShortensControllerTest < ActionController::TestCase
-  setup do
-    @shorten = shortens(:one)
-  end
 
-  test "should get index" do
-    get :index
-    assert_response :success
-    assert_not_nil assigns(:shortens)
-  end
-
-  test "should get new" do
-    get :new
+  test "should get shortcode without lastseendate stats" do
+    get(:stats, {'id' => "sone" })
+    
+    shorten = JSON.parse( @response.body )
+    assert_equal 0, shorten['redirectcount']
+    assert_equal "2013-01-15T10:41:24.000Z", shorten['startdate']
+    assert_nil shorten['lastseendate']
     assert_response :success
   end
-
-  test "should create shorten" do
-    assert_difference('Shorten.count') do
-      post :create, shorten: { lastseendate: @shorten.lastseendate, redirectcount: @shorten.redirectcount, shortcode: @shorten.shortcode, startdate: @shorten.startdate, url: @shorten.url }
-    end
-
-    assert_redirected_to shorten_path(assigns(:shorten))
-  end
-
-  test "should show shorten" do
-    get :show, id: @shorten
+  
+  test "should get shortcode with lastseendate stats" do
+    get(:stats, {'id' => "stwo" })
+    
+    shorten = JSON.parse( @response.body )
+    assert_equal 2, shorten['redirectcount']
+    assert_equal "2014-05-15T08:45:16.000Z", shorten['startdate']
+    assert_equal "2015-01-15T10:41:24.000Z", shorten['lastseendate']
     assert_response :success
   end
-
-  test "should get edit" do
-    get :edit, id: @shorten
-    assert_response :success
+  
+  test "should not get shortcode stats" do
+    get(:stats, {'id' => "sthree" })
+    assert_response :missing
+  end
+  
+    test "should get shortcode one" do
+    get(:show, {'id' => "sone" })
+    assert_equal "Local: http://stackoverflow.com/questions/21269050/rails-yaml-fixture-specify-null-value", @response.body
+    assert_response :redirect
+  end
+  
+  test "should get shortcode two" do
+    get(:show, {'id' => "stwo" })
+    assert_equal "Local: http://stackoverflow.com", @response.body
+    assert_response :redirect
+  end
+  
+  
+  test "should not get shortcode" do
+    get(:show, {'id' => "12345" })
+    assert_response :missing
   end
 
-  test "should update shorten" do
-    patch :update, id: @shorten, shorten: { lastseendate: @shorten.lastseendate, redirectcount: @shorten.redirectcount, shortcode: @shorten.shortcode, startdate: @shorten.startdate, url: @shorten.url }
-    assert_redirected_to shorten_path(assigns(:shorten))
-  end
-
-  test "should destroy shorten" do
-    assert_difference('Shorten.count', -1) do
-      delete :destroy, id: @shorten
-    end
-
-    assert_redirected_to shortens_path
-  end
 end

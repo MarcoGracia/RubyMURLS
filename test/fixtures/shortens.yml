@@ -2,14 +2,14 @@
 
 one:
   url: http://stackoverflow.com/questions/21269050/rails-yaml-fixture-specify-null-value
-  shortcode: stackoverflownotseen
-  startdate: 2015-01-15 10:41:24
+  shortcode: sone
+  startdate: 2013-01-15T10:41:24.000Z
   lastseendate: 
   redirectcount: 0
 
 two:
   url: http://stackoverflow.com
-  shortcode: stackoverflowseen
-  startdate: 2015-01-15 10:41:24
-  lastseendate: 2015-01-15 10:41:24
-  redirectcount: 1
+  shortcode: stwo
+  startdate: 2014-05-15T08:45:16.000Z
+  lastseendate: 2015-01-15T10:41:24.000Z
+  redirectcount: 2
