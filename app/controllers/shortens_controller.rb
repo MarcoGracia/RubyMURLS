@@ -2,12 +2,6 @@ class ShortensController < ApplicationController
   before_action :set_shorten
   before_action :set_default_response_format
   protect_from_forgery with: :null_session
-  
-  # GET /shortens
-  # GET /shortens.json
-  def index
-    @shortens = Shorten.all
-  end
 
   #GET /:shortcode/stats
   def stats
@@ -33,11 +27,8 @@ class ShortensController < ApplicationController
   #GET /:shortcode
   def show
 
-    time = Time.now.to_s
-    time = DateTime.parse( time ).strftime( "%d/%m/%Y %H:%M" )
-
     begin
-      @shorten.update_attribute( :lastseendate, time )
+      @shorten.update_attribute( :lastseendate, get_current_date )
       @shorten.update_attribute( :redirectcount, @shorten.redirectcount + 1 )
       render text: "Local: " +  @shorten.url, :status => 302
     rescue
@@ -83,11 +74,8 @@ class ShortensController < ApplicationController
       if shortcode.nil? 
         shortcode = rand( 36**6 ).to_s( 36 )
       end
-      
-      time = Time.now.to_s
-      time = DateTime.parse( time ).strftime( "%d/%m/%Y %H:%M" )
-      
-      params = ActionController::Parameters.new( url:url, shortcode:shortcode, startdate: time, redirectcount: 0 )
+
+      params = ActionController::Parameters.new( url:url, shortcode:shortcode, startdate: get_current_date, redirectcount: 0 )
       
       params.permit(:url, :shortcode, :startdate, :redirectcount )
       
@@ -96,5 +84,10 @@ class ShortensController < ApplicationController
     protected
     def set_default_response_format
       request.format = :json
+    end
+    
+    def get_current_date
+      time = Time.now.to_s
+      time = DateTime.parse( time ).strftime( "%d/%m/%Y %H:%M" )
     end
 end
