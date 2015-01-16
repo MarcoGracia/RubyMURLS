@@ -5,6 +5,6 @@ Rails.application.routes.draw do
   get '/:id/stats', to: 'shortens#stats'
   post '/shorten', to: 'shortens#create'
 
-  root 'application#json'
+  root 'application#shorty'
   
 end
