@@ -1,4 +1,11 @@
 Shorty Challenge
 ================
 
-## Ruby project to make urls shorter
+Prepared for a deploy to heroku
+Requires rails 4.0 fully installed, execute bundle install --without production for a local enviroment
+
+Developed with cloud9, used sacffolding and rake to generate the datasource and the basic controller
+
+To run the tests just input "bin/rake test test/controllers/shortens_controller_test.rb" in the console from the root of the rubymurls workspace
+
+Hope you like it!
